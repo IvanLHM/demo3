@@ -1,0 +1,158 @@
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+
+// 定义实体类
+@Entity
+class ExcelData {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String column1;
+    private String column2;
+    private String column3;
+    // 根据实际Excel列添加更多字段
+    
+    // getter和setter方法
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public String getColumn1() { return column1; }
+    public void setColumn1(String column1) { this.column1 = column1; }
+    public String getColumn2() { return column2; }
+    public void setColumn2(String column2) { this.column2 = column2; }
+    public String getColumn3() { return column3; }
+    public void setColumn3(String column3) { this.column3 = column3; }
+}
+
+public class ExcelReader {
+    public static void main(String[] args) {
+        try {
+            // 指定要读取的Excel文件路径
+            String excelFilePath = "path/to/your/excel/file.xlsx";
+            FileInputStream inputStream = new FileInputStream(new File(excelFilePath));
+            
+            // 创建工作簿对象
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            
+            // 创建EntityManager
+            EntityManagerFactory emf = Persistence.createEntityManagerFactory("your-persistence-unit");
+            EntityManager em = emf.createEntityManager();
+            
+            // 遍历所有工作表
+            for (int sheetIndex = 0; sheetIndex < workbook.getNumberOfSheets(); sheetIndex++) {
+                System.out.println("\n读取第" + (sheetIndex + 1) + "个工作表: " + workbook.getSheetName(sheetIndex));
+                Sheet sheet = workbook.getSheetAt(sheetIndex);
+                
+                // 获取表头行
+                Row headerRow = sheet.getRow(0);
+                String[] headers = new String[headerRow.getLastCellNum()];
+                for (int i = 0; i < headerRow.getLastCellNum(); i++) {
+                    Cell cell = headerRow.getCell(i);
+                    headers[i] = cell.getStringCellValue();
+                    System.out.print(headers[i] + "\t");
+                }
+                System.out.println();
+                
+                // 存储所有实体对象的列表
+                List<ExcelData> dataList = new ArrayList<>();
+                
+                // 遍历数据行
+                for (int i = 1; i < sheet.getLastRowNum() + 1; i++) {
+                    Row row = sheet.getRow(i);
+                    if (row != null) {
+                        // 创建新的实体对象
+                        ExcelData data = new ExcelData();
+                        
+                        // 遍历行中的所有单元格
+                        for (int j = 0; j < headers.length; j++) {
+                            Cell cell = row.getCell(j);
+                            String cellValue = "";
+                            
+                            if (cell != null) {
+                                // 根据单元格类型获取值
+                                switch (cell.getCellType()) {
+                                    case STRING:
+                                        cellValue = cell.getStringCellValue();
+                                        break;
+                                    case NUMERIC:
+                                        if (DateUtil.isCellDateFormatted(cell)) {
+                                            cellValue = cell.getDateCellValue().toString();
+                                        } else {
+                                            cellValue = String.valueOf(cell.getNumericCellValue());
+                                        }
+                                        break;
+                                    case BOOLEAN:
+                                        cellValue = String.valueOf(cell.getBooleanCellValue());
+                                        break;
+                                    case FORMULA:
+                                        cellValue = cell.getCellFormula();
+                                        break;
+                                    default:
+                                        cellValue = "";
+                                }
+                            }
+                            
+                            // 根据表头名称设置实体对象的属性
+                            String headerName = headers[j];
+                            switch(headerName) {
+                                case "姓名":
+                                    data.setName(cellValue);
+                                    break;
+                                case "年龄":
+                                    data.setAge(cellValue);
+                                    break;
+                                case "性别":
+                                    data.setGender(cellValue);
+                                    break;
+                                case "电话":
+                                    data.setPhone(cellValue);
+                                    break;
+                                case "地址":
+                                    data.setAddress(cellValue);
+                                    break;
+                                default:
+                                    System.out.println("未知的表头: " + headerName);
+                            }
+                            System.out.print(cellValue + "\t");
+                        }
+                        
+                        // 将实体对象添加到列表
+                        dataList.add(data);
+                        System.out.println();
+                    }
+                }
+                
+                // 批量保存到数据库
+                try {
+                    em.getTransaction().begin();
+                    for (ExcelData data :  ) {
+                        em.persist(data);
+                    }
+                    em.getTransaction().commit();
+                    System.out.println("成功保存 " + dataList.size() + " 条数据到数据库");
+                } catch (Exception e) {
+                    em.getTransaction().rollback();
+                    e.printStackTrace();
+                }
+            }
+            
+            // 关闭资源
+            em.close();
+            emf.close();
+            workbook.close();
+            inputStream.close();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
