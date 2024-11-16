@@ -137,13 +137,19 @@
 
         #emojiInput {
             width: 300px;
+            height: 100px;
             padding: 8px;
             margin-right: 10px;
             border: 1px solid #ccc;
             border-radius: 2px;
+            resize: vertical;
+            font-family: "Segoe UI", "Microsoft YaHei", sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
         }
 
         #togglePicker {
+            vertical-align: top;
             padding: 8px 16px;
             background: #0078d4;
             color: white;
@@ -206,11 +212,47 @@
         .symbol-item:hover {
             background: #f0f0f0;
         }
+
+        /* 自定义滚动条样式 */
+        .emoji-content::-webkit-scrollbar {
+            width: 6px;  /* 滚动条宽度 */
+        }
+
+        .emoji-content::-webkit-scrollbar-track {
+            background: transparent;  /* 滚动条轨道背景 */
+        }
+
+        .emoji-content::-webkit-scrollbar-thumb {
+            background: #ccc;  /* 滚动条滑块颜色 */
+            border-radius: 3px;  /* 滑块圆角 */
+        }
+
+        .emoji-content::-webkit-scrollbar-thumb:hover {
+            background: #999;  /* 鼠标悬停时滑块颜色 */
+        }
+
+        /* 二级标签栏的横向滚动条样式 */
+        .secondary-tabs::-webkit-scrollbar {
+            height: 6px;  /* 横向滚动条高度 */
+        }
+
+        .secondary-tabs::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .secondary-tabs::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .secondary-tabs::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
     </style>
 </head>
 <body>
     <div class="input-container">
-        <input type="text" id="emojiInput" placeholder="在此输入文字...">
+        <textarea id="emojiInput" placeholder="在此输入文字..."></textarea>
         <button id="togglePicker">选择表情</button>
     </div>
 

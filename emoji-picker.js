@@ -1,3 +1,4 @@
+
 ;(function($) {
     'use strict';
 
@@ -12,6 +13,11 @@
         constructor(element, options) {
             this.element = element;
             this.settings = $.extend({}, defaults, options);
+            this.recentEmojis = {
+                '😊': new Set(),  // 表情符号的最近使用
+                ';-)': new Set(), // 颜文字的最近使用 
+                'Ω': new Set()    // 符号的最近使用
+            };
             this.init();
         }
 
@@ -23,7 +29,7 @@
                     '😊',      // 笑脸图标代表"笑脸和动物"
                     '👩',      // 女性图标代表"人"
                     '🎈',      // 气球图标代表"庆祝和物品"
-                    '🍕',      // 食物图标代表"食品和植物"
+                    '🍕',      // 食��图标代表"食品和植物"
                     '🚗',      // 汽车图标代表"交通和地点"
                     '♡'       // 空心爱心图标代表"爱心"
                 ],
@@ -111,7 +117,7 @@
                     '👱', '👱‍♂️', '👴', '👵', '🧓', '🙍‍♀️', '🙍', '🙍‍♂️',
                     // 第八行 - 人物动作
                     '🙎‍♀️', '🙎', '🙎‍♂️', '🙅‍♀️', '🙅', '🙅‍♂️', '🙆‍♀️', '🙆',
-                    // 第九行 - 人物动作
+                    // ��九行 - 人物动作
                     '🙆‍♂️', '💁‍♀️', '💁', '💁‍♂️', '🙋‍♀️', '🙋', '🙋‍♂️', '🧏‍♀️',
                     // 第十行 - 人物动作
                     '🧏', '🧏‍♂️', '🙇‍♀️', '🙇', '🙇‍♂️', '🤦‍♀️', '🤦', '🤦‍♂️',
@@ -120,7 +126,7 @@
                     // 第十二行 - 职业
                     '👩‍🏫', '👨‍⚖️', '👩‍⚖️', '👨‍🌾', '👩‍🌾', '👨‍🍳', '👩‍🍳', '👨‍🔧',
                     // 第十三行 - 职业
-                    '👩‍🔧', '👨‍🏭', '👩‍🏭', '👨‍💼', '👩‍💼', '👨‍🔬', '👩‍🔬', '👨‍💻',
+                    '👩‍🔧', '👨‍🏭', '👩‍🏭', '👨‍💼', '👩‍', '👨‍🔬', '👩‍🔬', '👨‍💻',
                     // 第十四行 - 职业和其他
                     '👩‍💻', '👨‍🎤', '👩‍🎤', '👨‍🎨', '👩‍🎨', '👨‍✈️', '👩‍✈️', '👮'
                 ],
@@ -233,7 +239,7 @@
                     '∇', '∆', '∃', '∀', '∂', '∇', '≡', '≌'
                 ],
                 '几何': [
-                    '△', '▲', '▽', '▼', '◇', '◆', '○', '●',
+                    '△', '▲', '▽', '��', '◇', '◆', '○', '●',
                     '□', '■', '▢', '▣', '▤', '▥', '▦', '▧',
                     '▨', '▩', '▪', '▫', '▬', '▭', '▮', '▯',
                     '▰', '▱', '▲', '▶', '▼', '◀', '◢', '◣',
@@ -317,7 +323,7 @@
                     // 第十二行 - 彩色方形
                     '⬜', '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '🟫',
                     // 第十三行 - 黑色方形(由大到小)
-                    '⬛', '⬜', '◾', '◽', '▪️', '▫️', '▪️', '▫️',
+                    '⬛', '⬜', '◾', '◽', '▪️', '▫️', '��️', '▫️',
                     // 第十四行 - 宗教和和平符号
                     '☮', '✝', '☪', '🕉', '☸', '✡', '☯', '✴',
                     // 第十五行 - 指示符号
@@ -339,7 +345,6 @@
         init() {
             this.currentPrimaryTab = '😊';
             this.currentSecondaryTab = EmojiPicker.CATEGORIES['😊'][1];
-            this.recentEmojis = new Set();
             
             this.createPickerElement();
             this.bindEvents();
@@ -421,12 +426,65 @@
         }
 
         updatePosition() {
-            const buttonPos = $(this.element).offset();
-            const buttonHeight = $(this.element).outerHeight();
+            const $input = $(this.settings.inputTarget);
+            if (!$input.length) return;
+
+            // 获取输入框的位置和尺寸信息
+            const inputPos = $input.offset();
+            const inputScrollTop = $input.scrollTop();
+            const lineHeight = parseInt($input.css('lineHeight'));
+            
+            // 获取光标位置信息
+            const cursorPosition = $input[0].selectionStart;
+            const text = $input.val();
+            const textBeforeCursor = text.substring(0, cursorPosition);
+            
+            // 计算光标所在行
+            const lines = textBeforeCursor.split('\n');
+            const currentLineNumber = lines.length - 1;
+            const currentLineTop = currentLineNumber * lineHeight;
+            
+            // 创建临时元素来计算当前行光标的水平位置
+            const currentLine = lines[lines.length - 1];
+            const $temp = $('<span>').css({
+                position: 'absolute',
+                visibility: 'hidden',
+                whiteSpace: 'pre',
+                font: $input.css('font'),
+                fontSize: $input.css('fontSize'),
+                letterSpacing: $input.css('letterSpacing')
+            }).text(currentLine);
+            
+            $('body').append($temp);
+            const cursorOffset = $temp.width();
+            $temp.remove();
+            
+            // 计算表情选择器的位置
+            const pickerWidth = this.$picker.outerWidth();
+            let left = inputPos.left + cursorOffset + parseInt($input.css('paddingLeft'));
+            let top = inputPos.top + currentLineTop - inputScrollTop + lineHeight + parseInt($input.css('paddingTop'));
+            
+            // 确保选择器不会超出窗口右边界
+            const windowWidth = $(window).width();
+            if (left + pickerWidth > windowWidth) {
+                left = windowWidth - pickerWidth - 10;
+            }
+            
+            // 确保选择器不会超出窗口左边界
+            if (left < 0) {
+                left = 10;
+            }
+            
+            // 如果选择器会超出窗口底部，则显示在光标上方
+            const pickerHeight = this.$picker.outerHeight();
+            const windowHeight = $(window).height();
+            if (top + pickerHeight > windowHeight) {
+                top = top - pickerHeight - lineHeight;
+            }
             
             this.$picker.css({
-                top: buttonPos.top + buttonHeight + 5,
-                left: buttonPos.left
+                top: top,
+                left: left
             });
         }
 
@@ -476,24 +534,32 @@
 
             const categoryName = EmojiPicker.SECONDARY_TAB_MAPPING[this.currentSecondaryTab];
             
-            if (categoryName === '最近使用') {
-                Array.from(this.recentEmojis).forEach(emoji => {
-                    $content.append(this.createEmojiElement(emoji));
-                });
-                return;
-            }
-
-            const emojis = EmojiPicker.EMOJI_DATA[categoryName] || [];
-            
             // 判断当前分类类型
             const isKaomoji = this.currentPrimaryTab === ';-)';
             const isSymbol = this.currentPrimaryTab === 'Ω';
             
+            // 根据当前一级tab添加对应的内容样式类
             if (isKaomoji) {
                 $content.addClass('kaomoji-content');
             } else if (isSymbol) {
                 $content.addClass('symbol-content');
             }
+
+            if (categoryName === '最近使用') {
+                // 使用当前一级tab对应的最近使用记录
+                Array.from(this.recentEmojis[this.currentPrimaryTab]).forEach(emoji => {
+                    let className = 'emoji-item';
+                    if (isKaomoji) {
+                        className = 'kaomoji-item';
+                    } else if (isSymbol) {
+                        className = 'symbol-item';
+                    }
+                    $content.append(this.createEmojiElement(emoji, className));
+                });
+                return;
+            }
+
+            const emojis = EmojiPicker.EMOJI_DATA[categoryName] || [];
             
             emojis.forEach(emoji => {
                 let className = 'emoji-item';
@@ -529,10 +595,12 @@
                 $input.focus();
             }
 
-            // 添加到最近使用
-            this.recentEmojis.add(emoji);
-            if (this.recentEmojis.size > 30) {
-                this.recentEmojis.delete(Array.from(this.recentEmojis)[0]);
+            // 添加到当前一级tab的最近使用记录中
+            this.recentEmojis[this.currentPrimaryTab].add(emoji);
+            if (this.recentEmojis[this.currentPrimaryTab].size > 30) {
+                this.recentEmojis[this.currentPrimaryTab].delete(
+                    Array.from(this.recentEmojis[this.currentPrimaryTab])[0]
+                );
             }
 
             // 触发选择回调
