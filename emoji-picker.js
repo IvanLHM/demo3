@@ -123,7 +123,7 @@
                     '🧏', '🧏‍♂️', '🙇‍♀️', '🙇', '🙇‍♂️', '🤦‍♀️', '🤦', '🤦‍♂️',
                     // 第十一行 - 人物动作
                     '🤷‍♀️', '🤷', '🤷‍♂️', '👨‍⚕️', '👩‍⚕️', '👨‍🎓', '👩‍🎓', '👨‍🏫',
-                    // 第十二行 - 职业
+                    // ���十二行 - 职业
                     '👩‍🏫', '👨‍⚖️', '👩‍⚖️', '👨‍🌾', '👩‍🌾', '👨‍🍳', '👩‍🍳', '👨‍🔧',
                     // 第十三行 - 职业
                     '👩‍🔧', '👨‍🏭', '👩‍🏭', '👨‍💼', '👩‍', '👨‍🔬', '👩‍🔬', '👨‍💻',
@@ -208,7 +208,7 @@
                     '㎡', '㎥', '㎦', '㎛', '㎟', '㎠', '㎤', '㎪',
                     '㎫', '㎭', '㎮', '㎯', '㎰', '㎱', '㎲', '㎳',
                     '㎴', '㎵', '㎶', '㎷', '㎸', '㎹', '㎺', '㏄',
-                    '㏎', '㏑', '㏒', '㏕', '‰', '％', '‱', '℮'
+                    '㏎', '㏑', '㏒', '', '‰', '％', '‱', '℮'
                 ],
                 '序号': [
                     '①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧',
@@ -337,7 +337,7 @@
                     // 时钟系列 - 第三行
                     '🕠', '🕡', '🕢', '🕣', '🕤', '🕥', '🕦', '🕧',
                     // 对话框系列
-                    '💭', '🗨️', '💬', '🗯️', '👁️', '⏰', '⌚', '⏱️'
+                    '💭', '️', '💬', '🗯️', '👁️', '⏰', '⌚', '⏱️'
                 ]
             };
         }
@@ -376,22 +376,55 @@
         bindEvents() {
             // 绑定按钮点击事件
             $(this.element).on('click', (e) => {
-                e.stopPropagation();
+                e.preventDefault();  // 防止默认行为
+                e.stopPropagation();  // 阻止事件冒泡
+                
+                // 如果是 Summernote 相关的按钮，保存选区并保持焦点
+                if (!this.settings.inputTarget) {
+                    const $summernote = $('#summernote');
+                    const $editor = $summernote.next('.note-editor');
+                    const $editable = $editor.find('.note-editable');
+                    
+                    // 保存当前选区
+                    const selection = window.getSelection();
+                    if (selection && selection.rangeCount > 0) {
+                        const range = selection.getRangeAt(0);
+                        $summernote.data('lastRange', range);
+                    } else {
+                        // 如果没有选区，创建一个新的选区在编辑器末尾
+                        const range = document.createRange();
+                        const lastChild = $editable[0].lastChild || $editable[0];
+                        range.setStart(lastChild, lastChild.length || 0);
+                        range.setEnd(lastChild, lastChild.length || 0);
+                        $summernote.data('lastRange', range);
+                        
+                        // 应用新选区
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    }
+                    
+                    // 保持编辑器焦点
+                    $editable.focus();
+                }
+                
                 this.toggle();
             });
 
             // 绑定关闭按钮事件
-            this.$picker.find('.close-btn').on('click', () => this.hide());
-
-            // 绑定一级分类点击事件
-            this.$picker.find('.primary-tab').on('click', (e) => this.onPrimaryTabClick(e));
+            this.$picker.find('.close-btn').on('click', () => {
+                this.hide();
+            });
 
             // 点击其他地方关闭
             $(document).on('click', (e) => {
-                if (!$(e.target).closest('.emoji-picker').length) {
+                if (!$(e.target).closest('.emoji-picker').length && 
+                    !$(e.target).closest(this.element).length) {
                     this.hide();
                 }
             });
+
+            // 绑定一级分类点击事件
+            this.$picker.find('.primary-tab').on('click', (e) => this.onPrimaryTabClick(e));
         }
 
         // 其他方法...
@@ -417,6 +450,17 @@
                        .first().addClass('active');
             
             this.initializePicker();
+            
+            // 如果是 Summernote，保存当前选区
+            if (!this.settings.inputTarget) {
+                const $summernote = $('#summernote');
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    $summernote.data('lastRange', range);
+                }
+            }
+            
             this.updatePosition();
             this.$picker.show();
         }
@@ -431,18 +475,22 @@
             // 处理 Summernote 编辑器的情况
             if (!this.settings.inputTarget) {
                 const $summernote = $('#summernote');
-                if ($summernote.length) {
-                    const $editor = $summernote.next('.note-editor');
-                    const $editable = $editor.find('.note-editable');
-                    const editorPos = $editor.offset();
-                    const caretPos = $editable.find('div:last').offset() || $editable.offset();
+                const $editor = $summernote.next('.note-editor');
+                const $editable = $editor.find('.note-editable');
+                
+                // 获取当前选区
+                const selection = window.getSelection();
+                if (selection && selection.rangeCount > 0) {
+                    const range = selection.getRangeAt(0);
+                    const rect = range.getBoundingClientRect();
                     
-                    // 获取当前行的位置
-                    let top = (caretPos ? caretPos.top : editorPos.top) + parseInt($editable.css('paddingTop'));
-                    let left = editorPos.left;
+                    // 计算位置
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
                     
-                    // 调整位置到当前行的下方
-                    top += parseInt($editable.css('lineHeight')) || 20;
+                    // 设置位置在光标所在行的下方
+                    let top = rect.bottom + scrollTop + 5; // 光标底部位置加5px间距
+                    let left = rect.left + scrollLeft;
                     
                     // 确保选择器不会超出窗口边界
                     const pickerWidth = this.$picker.outerWidth();
@@ -450,19 +498,33 @@
                     const windowWidth = $(window).width();
                     const windowHeight = $(window).height();
                     
+                    // 水平边界检查
                     if (left + pickerWidth > windowWidth) {
                         left = windowWidth - pickerWidth - 10;
                     }
                     if (left < 0) {
                         left = 10;
                     }
-                    if (top + pickerHeight > windowHeight) {
-                        top = top - pickerHeight - (parseInt($editable.css('lineHeight')) || 20);
+                    
+                    // 垂直边界检查
+                    if (top + pickerHeight > windowHeight + scrollTop) {
+                        // 如果下方空间不足，显示在光标上方
+                        top = rect.top + scrollTop - pickerHeight - 5;
                     }
                     
                     this.$picker.css({
                         top: top,
                         left: left
+                    });
+                    return;
+                } else {
+                    // 如果没有选区，默认显示在编辑器的当前视图位置
+                    const editorPos = $editable.offset();
+                    const scrollTop = $editable.scrollTop();
+                    
+                    this.$picker.css({
+                        top: editorPos.top + 20,
+                        left: editorPos.left + 20
                     });
                     return;
                 }
@@ -632,19 +694,45 @@
                 $input.val(text.slice(0, pos) + emoji + text.slice(pos));
                 $input[0].setSelectionRange(pos + emoji.length, pos + emoji.length);
                 $input.focus();
+            } else {
+                // Summernote 的处理
+                const $summernote = $('#summernote');
+                const lastRange = $summernote.data('lastRange');
+                const $editor = $summernote.next('.note-editor');
+                const $editable = $editor.find('.note-editable');
+                
+                if (!lastRange) {
+                    // 如果没有保存的选区，创建一个新的选区在编辑器末尾
+                    const range = document.createRange();
+                    const lastChild = $editable[0].lastChild || $editable[0];
+                    range.setStart(lastChild, lastChild.length || 0);
+                    range.setEnd(lastChild, lastChild.length || 0);
+                    $summernote.data('lastRange', range);
+                }
+                
+                // 恢复选区并插入表情
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(lastRange || $summernote.data('lastRange'));
+                
+                // 插入表情
+                if (typeof this.settings.onSelect === 'function') {
+                    this.settings.onSelect(emoji);
+                }
+                
+                // 更新保存的选区
+                if (selection.rangeCount > 0) {
+                    const newRange = selection.getRangeAt(0);
+                    $summernote.data('lastRange', newRange);
+                }
             }
 
-            // 添加到当前一级tab的最近使用记录中
+            // 添加到最近使用记录
             this.recentEmojis[this.currentPrimaryTab].add(emoji);
             if (this.recentEmojis[this.currentPrimaryTab].size > 30) {
                 this.recentEmojis[this.currentPrimaryTab].delete(
                     Array.from(this.recentEmojis[this.currentPrimaryTab])[0]
                 );
-            }
-
-            // 触发选择回调
-            if (typeof this.settings.onSelect === 'function') {
-                this.settings.onSelect(emoji);
             }
         }
     }
