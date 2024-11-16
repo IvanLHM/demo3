@@ -29,7 +29,7 @@
                     '😊',      // 笑脸图标代表"笑脸和动物"
                     '👩',      // 女性图标代表"人"
                     '🎈',      // 气球图标代表"庆祝和物品"
-                    '🍕',      // 食��图标代表"食品和植物"
+                    '🍕',      // 食图标代表"食品和植物"
                     '🚗',      // 汽车图标代表"交通和地点"
                     '♡'       // 空心爱心图标代表"爱心"
                 ],
@@ -117,7 +117,7 @@
                     '👱', '👱‍♂️', '👴', '👵', '🧓', '🙍‍♀️', '🙍', '🙍‍♂️',
                     // 第八行 - 人物动作
                     '🙎‍♀️', '🙎', '🙎‍♂️', '🙅‍♀️', '🙅', '🙅‍♂️', '🙆‍♀️', '🙆',
-                    // ��九行 - 人物动作
+                    // 九行 - 人物动作
                     '🙆‍♂️', '💁‍♀️', '💁', '💁‍♂️', '🙋‍♀️', '🙋', '🙋‍♂️', '🧏‍♀️',
                     // 第十行 - 人物动作
                     '🧏', '🧏‍♂️', '🙇‍♀️', '🙇', '🙇‍♂️', '🤦‍♀️', '🤦', '🤦‍♂️',
@@ -239,7 +239,7 @@
                     '∇', '∆', '∃', '∀', '∂', '∇', '≡', '≌'
                 ],
                 '几何': [
-                    '△', '▲', '▽', '��', '◇', '◆', '○', '●',
+                    '△', '▲', '▽', '', '◇', '◆', '○', '●',
                     '□', '■', '▢', '▣', '▤', '▥', '▦', '▧',
                     '▨', '▩', '▪', '▫', '▬', '▭', '▮', '▯',
                     '▰', '▱', '▲', '▶', '▼', '◀', '◢', '◣',
@@ -323,7 +323,7 @@
                     // 第十二行 - 彩色方形
                     '⬜', '🟥', '🟧', '🟨', '🟩', '🟦', '🟪', '🟫',
                     // 第十三行 - 黑色方形(由大到小)
-                    '⬛', '⬜', '◾', '◽', '▪️', '▫️', '��️', '▫️',
+                    '⬛', '⬜', '◾', '◽', '▪️', '▫️', '️', '▫️',
                     // 第十四行 - 宗教和和平符号
                     '☮', '✝', '☪', '🕉', '☸', '✡', '☯', '✴',
                     // 第十五行 - 指示符号
@@ -427,65 +427,104 @@
 
         updatePosition() {
             const $input = $(this.settings.inputTarget);
-            if (!$input.length) return;
-
-            // 获取输入框的位置和尺寸信息
-            const inputPos = $input.offset();
-            const inputScrollTop = $input.scrollTop();
-            const lineHeight = parseInt($input.css('lineHeight'));
             
-            // 获取光标位置信息
-            const cursorPosition = $input[0].selectionStart;
-            const text = $input.val();
-            const textBeforeCursor = text.substring(0, cursorPosition);
-            
-            // 计算光标所在行
-            const lines = textBeforeCursor.split('\n');
-            const currentLineNumber = lines.length - 1;
-            const currentLineTop = currentLineNumber * lineHeight;
-            
-            // 创建临时元素来计算当前行光标的水平位置
-            const currentLine = lines[lines.length - 1];
-            const $temp = $('<span>').css({
-                position: 'absolute',
-                visibility: 'hidden',
-                whiteSpace: 'pre',
-                font: $input.css('font'),
-                fontSize: $input.css('fontSize'),
-                letterSpacing: $input.css('letterSpacing')
-            }).text(currentLine);
-            
-            $('body').append($temp);
-            const cursorOffset = $temp.width();
-            $temp.remove();
-            
-            // 计算表情选择器的位置
-            const pickerWidth = this.$picker.outerWidth();
-            let left = inputPos.left + cursorOffset + parseInt($input.css('paddingLeft'));
-            let top = inputPos.top + currentLineTop - inputScrollTop + lineHeight + parseInt($input.css('paddingTop'));
-            
-            // 确保选择器不会超出窗口右边界
-            const windowWidth = $(window).width();
-            if (left + pickerWidth > windowWidth) {
-                left = windowWidth - pickerWidth - 10;
+            // 处理 Summernote 编辑器的情况
+            if (!this.settings.inputTarget) {
+                const $summernote = $('#summernote');
+                if ($summernote.length) {
+                    const $editor = $summernote.next('.note-editor');
+                    const $editable = $editor.find('.note-editable');
+                    const editorPos = $editor.offset();
+                    const caretPos = $editable.find('div:last').offset() || $editable.offset();
+                    
+                    // 获取当前行的位置
+                    let top = (caretPos ? caretPos.top : editorPos.top) + parseInt($editable.css('paddingTop'));
+                    let left = editorPos.left;
+                    
+                    // 调整位置到当前行的下方
+                    top += parseInt($editable.css('lineHeight')) || 20;
+                    
+                    // 确保选择器不会超出窗口边界
+                    const pickerWidth = this.$picker.outerWidth();
+                    const pickerHeight = this.$picker.outerHeight();
+                    const windowWidth = $(window).width();
+                    const windowHeight = $(window).height();
+                    
+                    if (left + pickerWidth > windowWidth) {
+                        left = windowWidth - pickerWidth - 10;
+                    }
+                    if (left < 0) {
+                        left = 10;
+                    }
+                    if (top + pickerHeight > windowHeight) {
+                        top = top - pickerHeight - (parseInt($editable.css('lineHeight')) || 20);
+                    }
+                    
+                    this.$picker.css({
+                        top: top,
+                        left: left
+                    });
+                    return;
+                }
             }
             
-            // 确保选择器不会超出窗口左边界
-            if (left < 0) {
-                left = 10;
+            // 处理普通 textarea 的情况
+            if ($input.length) {
+                const inputPos = $input.offset();
+                const inputScrollTop = $input.scrollTop();
+                const lineHeight = parseInt($input.css('lineHeight'));
+                
+                // 获取光标位置信息
+                const cursorPosition = $input[0].selectionStart;
+                const text = $input.val();
+                const textBeforeCursor = text.substring(0, cursorPosition);
+                
+                // 计算光标所在行
+                const lines = textBeforeCursor.split('\n');
+                const currentLineNumber = lines.length - 1;
+                const currentLineTop = currentLineNumber * lineHeight;
+                
+                // 创建临时元素来计算当前行光标的水平位置
+                const currentLine = lines[lines.length - 1];
+                const $temp = $('<span>').css({
+                    position: 'absolute',
+                    visibility: 'hidden',
+                    whiteSpace: 'pre',
+                    font: $input.css('font'),
+                    fontSize: $input.css('fontSize'),
+                    letterSpacing: $input.css('letterSpacing')
+                }).text(currentLine);
+                
+                $('body').append($temp);
+                const cursorOffset = $temp.width();
+                $temp.remove();
+                
+                // 计算表情选择器的位置
+                const pickerWidth = this.$picker.outerWidth();
+                let left = inputPos.left + cursorOffset + parseInt($input.css('paddingLeft'));
+                let top = inputPos.top + currentLineTop - inputScrollTop + lineHeight + parseInt($input.css('paddingTop'));
+                
+                // 确保选择器不会超出窗口边界
+                const windowWidth = $(window).width();
+                if (left + pickerWidth > windowWidth) {
+                    left = windowWidth - pickerWidth - 10;
+                }
+                if (left < 0) {
+                    left = 10;
+                }
+                
+                // 如果选择器会超出窗口底部，则显示在光标上方
+                const pickerHeight = this.$picker.outerHeight();
+                const windowHeight = $(window).height();
+                if (top + pickerHeight > windowHeight) {
+                    top = top - pickerHeight - lineHeight;
+                }
+                
+                this.$picker.css({
+                    top: top,
+                    left: left
+                });
             }
-            
-            // 如果选择器会超出窗口底部，则显示在光标上方
-            const pickerHeight = this.$picker.outerHeight();
-            const windowHeight = $(window).height();
-            if (top + pickerHeight > windowHeight) {
-                top = top - pickerHeight - lineHeight;
-            }
-            
-            this.$picker.css({
-                top: top,
-                left: left
-            });
         }
 
         // 添加缺失的方法
