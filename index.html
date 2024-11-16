@@ -151,15 +151,52 @@
         }
 
         .kaomoji-item {
-            width: 80px;
-            height: 32px;
-            font-size: 12px;
-            margin: 2px;
+            width: 120px;
+            height: 40px;
+            font-size: 14px;
+            margin: 0 0 12px 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 3px;
             background: transparent;
             border: none;
         }
 
+        .emoji-content.kaomoji-content {
+            padding: 12px;
+            justify-content: center;
+            gap: 8px;
+        }
+
         .kaomoji-item:hover {
+            background: #f0f0f0;
+        }
+
+        /* 添加符号样式 */
+        .symbol-item {
+            width: 32px;
+            height: 32px;
+            font-size: 16px;
+            margin: 0 0 12px 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 3px;
+            background: transparent;
+            border: none;
+            color: #333;  /* 调整符号颜色 */
+        }
+
+        .emoji-content.symbol-content {
+            padding: 12px 8px 0 8px;
+            justify-content: flex-start;
+            gap: 4px;  /* 调整符号之间的间距 */
+        }
+
+        .symbol-item:hover {
             background: #f0f0f0;
         }
     </style>
@@ -170,21 +207,17 @@
         <button id="togglePicker">选择表情</button>
     </div>
 
-    <div class="emoji-picker">
-        <div class="picker-header">
-            <span class="picker-title">表情符号</span>
-            <button class="close-btn">✕</button>
-        </div>
-        <div class="primary-tabs">
-            <button class="primary-tab active">😊</button>
-            <button class="primary-tab">;-)</button>
-            <button class="primary-tab">Ω</button>
-        </div>
-        <div class="emoji-content"></div>
-        <div class="secondary-tabs"></div>
-    </div>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="emoji-picker.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#togglePicker').emojiPicker({
+                inputTarget: '#emojiInput',
+                onSelect: function(emoji) {
+                    console.log('Selected emoji:', emoji);
+                }
+            });
+        });
+    </script>
 </body>
 </html> 

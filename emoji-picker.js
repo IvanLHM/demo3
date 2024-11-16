@@ -1,234 +1,294 @@
-$(document).ready(function() {
-    const categories = {
-        '😊': ['🕐', '😊', '👤', '🎈', '🍕', '🚗', '❤️'],
-        ';-)': ['🕐', ':D', ':)', '(^o^)', ':(', '>:(', ':|', ':O'],
-        'Ω': ['🕐', '📏', '①', '⚡', '❗', '➕', '⬛', 'Ω']
+;(function($) {
+    'use strict';
+
+    // 插件默认配置
+    const defaults = {
+        inputTarget: null,  // 输入目标元素
+        position: 'bottom',  // 弹出位置：bottom, top, left, right
+        onSelect: null,  // 选择表情后的回调函数
     };
 
-    const tabMapping = {
-        '😊': '表情符号',
-        ';-)': '颜文字',
-        'Ω': '符号'
-    };
-
-    const secondaryTabMapping = {
-        // 表情符号的二级分类
-        '🕐': '最近使用',
-        '😊': '笑脸和动物',
-        '👤': '人',
-        '🎈': '庆祝和物品',
-        '🍕': '食品和植物',
-        '🚗': '交通和地点',
-        '❤️': '爱心',
-        
-        // 颜文字的二级分类
-        '🕐': '最近使用',
-        ':D': '开心',
-        ':)': '问候',
-        '(^o^)': '卖萌',
-        ':(': '忧伤',
-        '>:(': '生气',
-        ':|': '无语',
-        ':O': '惊讶',
-        
-        // 符号的二级分类
-        '🕐': '最近使用',
-        '📏': '单位',
-        '①': '序号',
-        '⚡': '特殊符号',
-        '❗': '标点符号',
-        '➕': '数学',
-        '⬛': '几何',
-        'Ω': '字母'
-    };
-
-    const emojiData = {
-        '笑脸和动物': ['🙂', '😊', '😀', '😄', '😅', '😆', '😂', '🤣', '😉', '😌', '😍', '😘', '😋', '😜', '😝', '😛', '🤑', '😎', '🤓', '🧐', '🤠', '🥳'],
-        '人': ['👋', '🤚', '✋', '🖐️', '👌', '🤌', '🤏', '✌️', '🤞', '🫰', '🤟', '🤘', '🤙', '👈', '👉', '👆', '🖕', '👇', '☝️', '👍', '👎', '✊'],
-        '开心': [
-            '(*^▽^*)', '(◕‿◕)', '(｡♥‿♥｡)', 
-            '(＾▽＾)', '(/◕ヮ◕)/', 'ヽ(´▽`)/'
-        ],
-        '问候': [
-            '(｡･∀･)ﾉﾞ', 'ヾ(・ω・*)', 
-            '(*´∀`)~♥', '(｀･ω･´)ゞ'
-        ],
-        '卖萌': [
-            '(●´ω｀●)', '(｡◕‿◕｡)', 
-            '(◕ᴗ◕✿)', '(｡◕ω◕｡)'
-        ],
-        '忧伤': [
-            '(´;ω;｀)', '(╥﹏╥)', 
-            '(;´д｀)', '(´；ω；｀)'
-        ],
-        '生气': [
-            '(｀皿´＃)', '(╬ﾟдﾟ)', 
-            '(╬`益´)', '(‡▼益▼)'
-        ],
-        '无语': [
-            '(￣▽￣*)ゞ', '(-_-;)・・・', 
-            '(￣～￣;)', '(；一_一)'
-        ],
-        '惊讶': [
-            '(⊙_⊙)', '(⊙o⊙)', 
-            'w(ﾟДﾟ)w', '(´⊙ω⊙`)'
-        ],
-        '单位': ['°', '℃', '℉', '㎎', '㎏', '㎜', '㎝', '㎞', '㎡', '℃', '‰', '％', '㎜Hg', '㏄', '〒'],
-        '序号': ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩',
-                'Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ', 'Ⅵ', 'Ⅶ', 'Ⅷ', 'Ⅸ', 'Ⅹ',
-                '⒈', '⒉', '⒊', '⒋', '⒌', '⒍', '⒎', '⒏', '⒐', '⒑'],
-        '特殊符号': ['©', '®', '™', '℠', '§', '¶', '†', '‡', '⁂', '☮', '☯', '☪', '☭', '♨', 
-                    '☢', '☣', '☤', '⚕', '⚜', '⚠', '☔', '♿', '⚡', '☎', '⌛', '☺', '☹'],
-        '标点符号': ['·', '‥', '…', '‧', '﹒', '．', '「', '」', '『', '』', '〔', '〕',
-                    '【', '】', '《', '》', '〈', '〉', '﹙', '﹚', '﹛', '﹜', '﹝', '﹞',
-                    '〝', '〞', '‵', '′', '※', '§', '¿', '¡', '‼', '⁉'],
-        '数学': ['＋', '－', '×', '÷', '＝', '≠', '≒', '∞', '±', '√', '∵', '∴', '∷',
-                '≤', '≥', '∠', '⊥', '∪', '∩', '∈', '∑', '∏', '∅', 'π', 'Δ', 'Φ', 'Ω'],
-        '几何': ['△', '▲', '▽', '▼', '◇', '◆', '○', '●', '□', '■', '▢', '▣', '▤',
-                '▥', '▦', '▧', '▨', '▩', '▪', '▫', '▬', '▭', '▮', '▯', '▰', '▱'],
-        '字母': ['α', 'β', 'γ', 'δ', '', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν',
-                'ξ', 'ο', 'π', 'ρ', 'σ', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω',
-                'Α', 'Β', 'Γ', 'Δ', 'Ε', 'Ζ', 'Η', 'Θ', 'Ι', 'Κ', 'Λ', 'Μ', 'Ν',
-                'Ξ', 'Ο', 'Π', 'Ρ', 'Σ', 'Τ', 'Υ', 'Φ', 'Χ', 'Ψ', 'Ω']
-    };
-
-    const recentEmojis = new Set();
-
-    let currentPrimaryTab = '😊';
-    let currentSecondaryTab = categories['😊'][1];
-
-    // 初始化函数
-    function initializePicker() {
-        // 设置初始标题
-        $('.picker-title').text(tabMapping[currentPrimaryTab]);
-        
-        // 设置初始一级分类激活状态
-        $('.primary-tab').first().addClass('active');
-        
-        // 更新二级分类和内容
-        updateSecondaryTabs();
-        updateEmojiContent();
-    }
-
-    // 切换表情选择器显示/隐藏
-    $('#togglePicker').click(function(e) {
-        e.stopPropagation();
-        const picker = $('.emoji-picker');
-        
-        if (!picker.is(':visible')) {
-            // 如果是首次显示或重新显示，重新初始化
-            currentPrimaryTab = '😊';
-            currentSecondaryTab = categories['😊'][1];
-            
-            // 重置所有一级分类tab的样式
-            $('.primary-tab').removeClass('active');
-            $('.primary-tab').first().addClass('active');  // 选中第一个tab
-            
-            initializePicker();
+    class EmojiPicker {
+        constructor(element, options) {
+            this.element = element;
+            this.settings = $.extend({}, defaults, options);
+            this.init();
         }
-        
-        picker.toggle();
-        
-        // 定位表情选择器
-        const button = $(this);
-        const buttonPos = button.offset();
-        picker.css({
-            top: buttonPos.top + button.outerHeight() + 5,
-            left: buttonPos.left
-        });
-    });
 
-    // 点击其他地方关闭选择器
-    $(document).click(function(e) {
-        if (!$(e.target).closest('.emoji-picker').length) {
-            $('.emoji-picker').hide();
+        // 常量数据
+        static get CATEGORIES() {
+            return {
+                '😊': ['🕐', '😀', '👤', '🎈', '🍕', '🚗', '❤️'],
+                ';-)': ['🕐', ':D', ':)', '(^o^)', ':(', '>:(', ':|', ':O'],
+                'Ω': ['🕐', '📏', '①', '⚡', '❗', '➕', '⬛', 'Ω']
+            };
         }
-    });
 
-    // 一级分类标签点击事件
-    $('.primary-tab').click(function() {
-        $('.primary-tab').removeClass('active');
-        $(this).addClass('active');
-        currentPrimaryTab = $(this).text();
-        
-        // 更新标题
-        $('.picker-title').text(tabMapping[currentPrimaryTab]);
-        
-        // 设置当前二级分类为该分类下的第二个选项
-        currentSecondaryTab = categories[currentPrimaryTab][1];  // 获取第二个选项
-        
-        updateSecondaryTabs();
-        updateEmojiContent();
-    });
+        static get TAB_MAPPING() {
+            return {
+                '😊': '表情符号',
+                ';-)': '颜文字',
+                'Ω': '符号'
+            };
+        }
 
-    // 更新二级分类标签
-    function updateSecondaryTabs() {
-        const secondaryTabs = categories[currentPrimaryTab];
-        $('.secondary-tabs').empty();
-        
-        secondaryTabs.forEach(tab => {
-            const isActive = tab === currentSecondaryTab ? 'active' : '';
-            $('.secondary-tabs').append(
-                `<button class="secondary-tab ${isActive}" title="${secondaryTabMapping[tab]}">${tab}</button>`
-            );
-        });
+        static get SECONDARY_TAB_MAPPING() {
+            return {
+                '🕐': '最近使用',
+                '😀': '笑脸和动物',
+                '👤': '人',
+                '🎈': '庆祝和物品',
+                '🍕': '食品和植物',
+                '🚗': '交通和地点',
+                '❤️': '爱心',
+                
+                ':D': '开心',
+                ':)': '问候',
+                '(^o^)': '卖萌',
+                ':(': '忧伤',
+                '>:(': '生气',
+                ':|': '无语',
+                ':O': '惊讶',
+                
+                '📏': '单位',
+                '①': '序号',
+                '⚡': '特殊符号',
+                '❗': '标点符号',
+                '➕': '数学',
+                '⬛': '几何',
+                'Ω': '字母'
+            };
+        }
 
-        // 二级分类标签点击事件
-        $('.secondary-tab').click(function() {
-            $('.secondary-tab').removeClass('active');
-            $(this).addClass('active');
-            currentSecondaryTab = $(this).text();
-            updateEmojiContent();
-        });
-    }
+        static get EMOJI_DATA() {
+            return {
+                '笑脸和动物': ['😀', '😃', '😄', '😁', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚', '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳'],
+                '人': ['👶', '👧', '🧒', '👦', '👩', '🧑', '👨', '👩‍🦱', '👨‍🦱', '👩‍🦰', '👨‍🦰', '👱‍♀️', '👱‍♂️', '👩‍🦳', '👨‍🦳', '👩‍🦲', '👨‍🦲', '🧔', '👵', '🧓', '👴'],
+                '开心': ['(◕‿◕)', '(｡♥‿♥｡)', '(◠‿◠)', 'ヽ(♡‿♡)ノ', '(｀・ω・´)"'],
+                '问候': ['(｡･∀･)ﾉﾞ', 'ヾ(・ω・*)', '(*´∀`)~♥', '(｀･ω･´)ゞ'],
+                '单位': ['°', '℃', '℉', '㎎', '㎏', '㎜', '㎝', '㎞', '㎡', '‰', '％', '㎜Hg', '㏄'],
+                '序号': ['①', '②', '③', '④', '⑤', '⑥', '⑦', '⑧', '⑨', '⑩', 'Ⅰ', 'Ⅱ', 'Ⅲ', 'Ⅳ', 'Ⅴ'],
+                '特殊符号': ['©', '®', '™', '℠', '§', '¶', '†', '‡', '⁂', '☮', '☯', '☪'],
+                '标点符号': ['·', '‥', '…', '', '﹒', '．', '「', '」', '『', '』', '〔', '〕'],
+                '数学': ['＋', '－', '×', '÷', '＝', '≠', '≒', '∞', '±', '√', '∵', '∴'],
+                '几何': ['△', '▲', '▽', '▼', '◇', '◆', '○', '●', '□', '■', '▢', '▣'],
+                '字母': ['α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν']
+            };
+        }
 
-    // 更新表情内容
-    function updateEmojiContent() {
-        const content = $('.emoji-content');
-        content.empty();
+        init() {
+            this.currentPrimaryTab = '😊';
+            this.currentSecondaryTab = EmojiPicker.CATEGORIES['😊'][1];
+            this.recentEmojis = new Set();
+            
+            this.createPickerElement();
+            this.bindEvents();
+        }
 
-        const categoryName = secondaryTabMapping[currentSecondaryTab];
-        
-        if (categoryName === '最近使用') {
-            Array.from(recentEmojis).forEach(emoji => {
-                content.append(`<span class="emoji-item" title="点击插入表情">${emoji}</span>`);
+        createPickerElement() {
+            // 创建选择器HTML结构
+            const pickerHtml = `
+                <div class="emoji-picker">
+                    <div class="picker-header">
+                        <span class="picker-title">表情符号</span>
+                        <button class="close-btn">✕</button>
+                    </div>
+                    <div class="primary-tabs">
+                        <button class="primary-tab active">😊</button>
+                        <button class="primary-tab">;-)</button>
+                        <button class="primary-tab">Ω</button>
+                    </div>
+                    <div class="emoji-content"></div>
+                    <div class="secondary-tabs"></div>
+                </div>
+            `;
+
+            this.$picker = $(pickerHtml);
+            $('body').append(this.$picker);
+            this.initializePicker();
+        }
+
+        bindEvents() {
+            // 绑定按钮点击事件
+            $(this.element).on('click', (e) => {
+                e.stopPropagation();
+                this.toggle();
             });
-            return;
+
+            // 绑定关闭按钮事件
+            this.$picker.find('.close-btn').on('click', () => this.hide());
+
+            // 绑定一级分类点击事件
+            this.$picker.find('.primary-tab').on('click', (e) => this.onPrimaryTabClick(e));
+
+            // 点击其他地方关闭
+            $(document).on('click', (e) => {
+                if (!$(e.target).closest('.emoji-picker').length) {
+                    this.hide();
+                }
+            });
         }
 
-        const emojis = emojiData[categoryName] || [];
-        
-        // 判断当前是否在颜文字分类
-        const isKaomoji = currentPrimaryTab === ';-)';
-        
-        emojis.forEach(emoji => {
-            content.append(
-                `<span class="emoji-item ${isKaomoji ? 'kaomoji-item' : ''}" 
-                       title="点击插入表情">${emoji}</span>`
-            );
-        });
+        // 其他方法...
+        initializePicker() {
+            this.$picker.find('.picker-title').text(EmojiPicker.TAB_MAPPING[this.currentPrimaryTab]);
+            this.updateSecondaryTabs();
+            this.updateEmojiContent();
+        }
+
+        toggle() {
+            if (!this.$picker.is(':visible')) {
+                this.show();
+            } else {
+                this.hide();
+            }
+        }
+
+        show() {
+            this.currentPrimaryTab = '😊';
+            this.currentSecondaryTab = EmojiPicker.CATEGORIES['😊'][1];
+            
+            this.$picker.find('.primary-tab').removeClass('active')
+                       .first().addClass('active');
+            
+            this.initializePicker();
+            this.updatePosition();
+            this.$picker.show();
+        }
+
+        hide() {
+            this.$picker.hide();
+        }
+
+        updatePosition() {
+            const buttonPos = $(this.element).offset();
+            const buttonHeight = $(this.element).outerHeight();
+            
+            this.$picker.css({
+                top: buttonPos.top + buttonHeight + 5,
+                left: buttonPos.left
+            });
+        }
+
+        // 添加缺失的方法
+        onPrimaryTabClick(e) {
+            const $tab = $(e.currentTarget);
+            this.currentPrimaryTab = $tab.text();
+            
+            this.$picker.find('.primary-tab').removeClass('active');
+            $tab.addClass('active');
+            
+            this.$picker.find('.picker-title').text(EmojiPicker.TAB_MAPPING[this.currentPrimaryTab]);
+            this.currentSecondaryTab = EmojiPicker.CATEGORIES[this.currentPrimaryTab][1];
+            
+            this.updateSecondaryTabs();
+            this.updateEmojiContent();
+        }
+
+        updateSecondaryTabs() {
+            const secondaryTabs = EmojiPicker.CATEGORIES[this.currentPrimaryTab];
+            const $secondaryTabs = this.$picker.find('.secondary-tabs');
+            $secondaryTabs.empty();
+            
+            secondaryTabs.forEach(tab => {
+                const isActive = tab === this.currentSecondaryTab ? 'active' : '';
+                $secondaryTabs.append(
+                    `<button class="secondary-tab ${isActive}" title="${EmojiPicker.SECONDARY_TAB_MAPPING[tab]}">${tab}</button>`
+                );
+            });
+
+            // ��二级分类标签点击事件
+            this.$picker.find('.secondary-tab').on('click', (e) => {
+                const $tab = $(e.currentTarget);
+                this.$picker.find('.secondary-tab').removeClass('active');
+                $tab.addClass('active');
+                this.currentSecondaryTab = $tab.text();
+                this.updateEmojiContent();
+            });
+        }
+
+        updateEmojiContent() {
+            const $content = this.$picker.find('.emoji-content');
+            $content.empty();
+            
+            // 移除之前的额外类名
+            $content.removeClass('kaomoji-content symbol-content');
+
+            const categoryName = EmojiPicker.SECONDARY_TAB_MAPPING[this.currentSecondaryTab];
+            
+            if (categoryName === '最近使用') {
+                Array.from(this.recentEmojis).forEach(emoji => {
+                    $content.append(this.createEmojiElement(emoji));
+                });
+                return;
+            }
+
+            const emojis = EmojiPicker.EMOJI_DATA[categoryName] || [];
+            
+            // 判断当前分类类型
+            const isKaomoji = this.currentPrimaryTab === ';-)';
+            const isSymbol = this.currentPrimaryTab === 'Ω';
+            
+            if (isKaomoji) {
+                $content.addClass('kaomoji-content');
+            } else if (isSymbol) {
+                $content.addClass('symbol-content');
+            }
+            
+            emojis.forEach(emoji => {
+                let className = 'emoji-item';
+                if (isKaomoji) {
+                    className = 'kaomoji-item';
+                } else if (isSymbol) {
+                    className = 'symbol-item';
+                }
+                
+                const $element = this.createEmojiElement(emoji, className);
+                $content.append($element);
+            });
+        }
+
+        createEmojiElement(emoji, className = 'emoji-item') {
+            const $emoji = $(`<span class="${className}" title="点击插入表情">${emoji}</span>`);
+            
+            $emoji.on('click', () => {
+                this.insertEmoji(emoji);
+            });
+            
+            return $emoji;
+        }
+
+        insertEmoji(emoji) {
+            if (this.settings.inputTarget) {
+                const $input = $(this.settings.inputTarget);
+                const pos = $input[0].selectionStart;
+                const text = $input.val();
+                
+                $input.val(text.slice(0, pos) + emoji + text.slice(pos));
+                $input[0].setSelectionRange(pos + emoji.length, pos + emoji.length);
+                $input.focus();
+            }
+
+            // 添加到最近使用
+            this.recentEmojis.add(emoji);
+            if (this.recentEmojis.size > 30) {
+                this.recentEmojis.delete(Array.from(this.recentEmojis)[0]);
+            }
+
+            // 触发选择回调
+            if (typeof this.settings.onSelect === 'function') {
+                this.settings.onSelect(emoji);
+            }
+        }
     }
 
-    // 点击表情插入输入框
-    $(document).on('click', '.emoji-item', function() {
-        const emoji = $(this).text();
-        const input = $('#emojiInput');
-        const pos = input[0].selectionStart;
-        const text = input.val();
-        
-        input.val(text.slice(0, pos) + emoji + text.slice(pos));
-        input[0].setSelectionRange(pos + emoji.length, pos + emoji.length);
-        input.focus();
+    // 注册为jQuery插件
+    $.fn.emojiPicker = function(options) {
+        return this.each(function() {
+            if (!$.data(this, 'emojiPicker')) {
+                $.data(this, 'emojiPicker', new EmojiPicker(this, options));
+            }
+        });
+    };
 
-        // 添加到最近使用
-        recentEmojis.add(emoji);
-        if (recentEmojis.size > 30) {
-            recentEmojis.delete(Array.from(recentEmojis)[0]);
-        }
-    });
-
-    // 关闭按钮点击事件
-    $('.close-btn').click(function() {
-        $('.emoji-picker').hide();
-    });
-}); 
+})(jQuery); 
