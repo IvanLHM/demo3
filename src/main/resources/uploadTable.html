@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AdminLTE 3 | Upload Table</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+          <i class="fas fa-th-large"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="../../index3.html" class="brand-link">
+      <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">AdminLTE 3</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+                Tables
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="tableTest.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Print Margin Report With Reason</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="singleTable.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Print Margin Report</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="uploadTable.html" class="nav-link active">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Import Undelivery Record</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Content Header -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-12">
+            <h1>Import Undelivery Record</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <!-- Custom Tabs -->
+            <div class="card card-primary card-tabs">
+              <div class="card-header p-0 pt-1">
+                <ul class="nav nav-tabs" id="custom-tabs-one-tab" role="tablist">
+                  <li class="nav-item">
+                    <a class="nav-link active" id="custom-tabs-one-general-tab" data-toggle="pill" href="#custom-tabs-one-general" role="tab" aria-controls="custom-tabs-one-general" aria-selected="true">Undelivery Mobile No</a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" id="custom-tabs-one-upload-tab" data-toggle="pill" href="#custom-tabs-one-upload" role="tab" aria-controls="custom-tabs-one-upload" aria-selected="false">Margin Customers Database</a>
+                  </li>
+                </ul>
+              </div>
+              <div class="card-body">
+                <div class="tab-content" id="custom-tabs-one-tabContent">
+                  <!-- Tab 1: Undelivery Mobile No -->
+                  <div class="tab-pane fade show active" id="custom-tabs-one-general" role="tabpanel" aria-labelledby="custom-tabs-one-general-tab">
+                    <!-- 查询条件行 -->
+                    <div class="row align-items-center mb-3">
+                      <div class="col-md-3">
+                        <div class="form-group mb-0">
+                          <label class="mb-1">Send Time</label>
+                          <input type="datetime-local" class="form-control form-control-sm" id="sendTimeInput"/>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group mb-0">
+                          <label class="mb-1">Sender ID</label>
+                          <input type="text" class="form-control form-control-sm" id="senderIdInput" placeholder="输入 Sender ID">
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group mb-0">
+                          <label class="mb-1">&nbsp;</label>
+                          <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" id="appendToDbCheckbox">
+                            <label for="appendToDbCheckbox" class="custom-control-label">Append to DB</label>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-md-3">
+                        <div class="form-group mb-0">
+                          <label class="mb-1">&nbsp;</label>
+                          <div>
+                            <button type="button" class="btn btn-primary btn-sm" id="generalReportBtn">
+                              <i class="fas fa-file-alt mr-1"></i> General Report
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 表格部分 -->
+                    <div id="report-table" style="display: none;">
+                      <div class="card mt-4">
+                        <div class="card-header bg-light">
+                          <h3 class="card-title">
+                            <i class="fas fa-chart-bar mr-2"></i>General Statistics
+                          </h3>
+                        </div>
+                        <div class="card-body">
+                          <table class="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Code</th>
+                                <th>Count</th>
+                                <th>Last Update</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>CSLRESPON</td>
+                                <td>150</td>
+                                <td>2024-03-20 15:30:25</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <!-- Tab 2: Margin Customers Database -->
+                  <div class="tab-pane fade" id="custom-tabs-one-upload" role="tabpanel" aria-labelledby="custom-tabs-one-upload-tab">
+                    <!-- 文件上传部分 -->
+                    <div class="row justify-content-center">
+                      <div class="col-md-8">
+                        <div class="card">
+                          <div class="card-header">
+                            <h3 class="card-title">
+                              <i class="fas fa-upload mr-2"></i>File Upload
+                            </h3>
+                          </div>
+                          <div class="card-body">
+                            <form id="uploadForm">
+                              <div class="text-center mb-4">
+                                <i class="fas fa-file-alt text-primary" style="font-size: 48px;"></i>
+                                <p class="text-muted mt-2">Supported file format: Text (.txt)</p>
+                              </div>
+                              <div class="form-group">
+                                <div class="input-group">
+                                  <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="fileInput" accept=".txt">
+                                    <label class="custom-file-label" for="fileInput">Choose file</label>
+                                  </div>
+                                  <div class="input-group-append">
+                                    <button type="submit" class="btn btn-primary" style="height: 38px; display: flex; align-items: center;">
+                                      <i class="fas fa-upload mr-1"></i> Upload
+                                    </button>
+                                  </div>
+                                </div>
+                                <small class="form-text text-muted mt-2">
+                                  <i class="fas fa-info-circle mr-1"></i>
+                                  Maximum file size: 10MB
+                                </small>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- 统计表格部分 -->
+                    <div id="upload-stats-table" style="display: none;">
+                      <div class="card mt-4">
+                        <div class="card-header bg-light">
+                          <h3 class="card-title">
+                            <i class="fas fa-chart-bar mr-2"></i>File Content Statistics
+                          </h3>
+                        </div>
+                        <div class="card-body">
+                          <table class="table table-bordered">
+                            <thead>
+                              <tr>
+                                <th>Code</th>
+                                <th>Count</th>
+                                <th>Last Update</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>TRADELIMIT</td>
+                                <td>150</td>
+                                <td>2024-03-20 15:30:25</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Footer -->
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-block">
+      <b>Version</b> 3.2.0
+    </div>
+    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+  </aside>
+</div>
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.min.js"></script>
+<!-- bs-custom-file-input -->
+<script src="../../plugins/bs-custom-file-input/bs-custom-file-input.min.js"></script>
+
+<script>
+$(function () {
+  bsCustomFileInput.init();
+
+  // General Report Button Click Handler
+  $('#generalReportBtn').click(function() {
+    // 获取条件值
+    const sendTime = $('#sendTimeInput').val();
+    const senderId = $('#senderIdInput').val();
+    const appendToDb = $('#appendToDbCheckbox').is(':checked');
+
+    // 这里可以添加条件验证
+    if (!sendTime || !senderId) {
+      alert('Please fill in the required information');
+      return;
+    }
+
+    // 这里可以根据条件生成报告
+    console.log('Generate report, conditions:', {
+      sendTime,
+      senderId,
+      appendToDb
+    });
+
+    // 显示报告表格
+    $('#report-table').fadeIn();
+  });
+
+  // Back Button Click Handler
+  $('#backBtn').click(function() {
+    $('#table-section').hide();
+    $('#welcome-section').fadeIn();
+  });
+
+  // 文件上传处理
+  $('#uploadForm').submit(function(e) {
+    e.preventDefault();
+    const file = $('#fileInput')[0].files[0];
+    if (file) {
+      // 这里可以添加实际的文件上传处理
+      console.log('Upload file:', file.name);
+      
+      // 显示统计表格
+      $('#upload-stats-table').fadeIn();
+      
+      // 重置表单
+      this.reset();
+      $('.custom-file-label').html('Choose file');
+    }
+  });
+});
+</script>
+
+<style>
+.form-group label {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.custom-checkbox {
+  padding-top: 5px;
+}
+
+#report-table {
+  margin-top: 20px;
+}
+
+.custom-file-label::after {
+  content: "Browse";
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.custom-file-label {
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 38px;
+}
+
+.input-group-append .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.custom-file-input {
+  height: 38px;
+}
+
+.card {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0,0,0,0.125);
+}
+
+.custom-file-input:focus ~ .custom-file-label {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+#upload-stats-table {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+#report-table {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+</style>
+
+</body>
+</html> 
