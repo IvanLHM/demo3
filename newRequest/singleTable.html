@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AdminLTE 3 | Print Margin Report</title>
+
+  <!-- Google Font: Source Sans Pro -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="../../plugins/fontawesome-free/css/all.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../../dist/css/adminlte.min.css">
+  <link rel="stylesheet" href="css/common.css">
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="../../plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+  <link rel="stylesheet" href="../../plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+  <!-- Navbar -->
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <!-- Left navbar links -->
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <!-- Right navbar links -->
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="fullscreen" href="#" role="button">
+          <i class="fas fa-expand-arrows-alt"></i>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+          <i class="fas fa-th-large"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+  <!-- /.navbar -->
+
+  <!-- Main Sidebar Container -->
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <!-- Brand Logo -->
+    <a href="../../index3.html" class="brand-link">
+      <img src="../../dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+      <span class="brand-text font-weight-light">AdminLTE 3</span>
+    </a>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item menu-open">
+            <a href="#" class="nav-link active">
+              <i class="nav-icon fas fa-table"></i>
+              <p>
+                Tables
+                <i class="fas fa-angle-left right"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a href="tableTest.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Print Margin Report With Reason</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="singleTable.html" class="nav-link active">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Print Margin Report</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="uploadTable.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Import Undelivery Record</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="accountMaintenance.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Undeliverable Account Maintenance</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="reasonMaintenance.html" class="nav-link">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>Undeliverable Reason Maintenance</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-12">
+            <h1 id="pageTitle">Print Margin Report</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- 欢迎界面 -->
+        <div id="welcome-section">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="card">
+                <div class="card-body text-center">
+                  <h1 class="mb-4"><i class="fas fa-table text-primary"></i></h1>
+                  <h2 class="mb-4">Welcome to Print Margin Report</h2>
+                  <p class="lead mb-5">Click "General Report" button to view the report details</p>
+                  <button type="button" class="btn btn-primary" id="generalReportBtn">
+                    <i class="fas fa-file-alt mr-1"></i> General Report
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 表格部分 -->
+        <div id="tables-section" style="display: none;">
+          <div class="mb-3 d-flex justify-content-between align-items-center">
+            <button type="button" class="btn btn-default" id="backBtn">
+              <i class="fas fa-arrow-left mr-1"></i> Back
+            </button>
+            <div>
+              <button type="button" class="btn btn-success" id="downloadBtn">
+                <i class="fas fa-download mr-1"></i> Download Reports
+              </button>
+              <button type="button" class="btn btn-default ml-2" onclick="window.print()">
+                <i class="fas fa-print mr-1"></i> Print
+              </button>
+            </div>
+          </div>
+
+          <!-- 第一个表格 -->
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">No SMS Registered Margin Customers</h3>
+            </div>
+            <div class="card-body">
+              <table class="table table-bordered" id="table1">
+                <thead>
+                  <tr>
+                    <th>AC No</th>
+                    <th>AC Name</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>123456</td>
+                    <td>John Smith</td>
+                  </tr>
+                  <tr>
+                    <td>789012</td>
+                    <td>Mary Johnson</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 第二个表格 -->
+          <div class="card mt-4">
+            <div class="card-header">
+              <h3 class="card-title">SMS Undeliverable Margin Customers</h3>
+            </div>
+            <div class="card-body">
+              <table class="table table-bordered" id="table2">
+                <thead>
+                  <tr>
+                    <th>AC No</th>
+                    <th>User no A/C Name</th>
+                    <th>Mobile Phone</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>345678</td>
+                    <td>Robert Wilson</td>
+                    <td>9876543210</td>
+                  </tr>
+                  <tr>
+                    <td>901234</td>
+                    <td>Sarah Davis</td>
+                    <td>8765432109</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Main Footer -->
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-block">
+      <b>Version</b> 3.2.0
+    </div>
+    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+  </footer>
+
+  <!-- Control Sidebar -->
+  <aside class="control-sidebar control-sidebar-dark">
+  </aside>
+</div>
+
+<!-- jQuery -->
+<script src="../../plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../../plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<!-- <script src="../../dist/js/demo.js"></script> -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/base.js"></script>
+<script>
+$(function() {
+  const $generalReportBtn = $('.btn-primary');
+  const $welcomeSection = $('#welcome-section');
+  const $tablesSection = $('#tables-section');
+  const $backBtn = $('#backBtn');
+  const $pageTitle = $('#pageTitle');
+
+  // 日期格式化函数
+  function formatDate(date) {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = months[date.getMonth()];
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
+  // General Report 按钮点击事件
+  $generalReportBtn.on('click', function() {
+    const currentDate = formatDate(new Date());
+    $pageTitle.text(`Print Margin Report as at ${currentDate}`);
+    $welcomeSection.hide();
+    $tablesSection.css('display', 'block').css('opacity', 0);
+    setTimeout(() => {
+      $tablesSection.css({
+        'transition': 'opacity 0.5s ease',
+        'opacity': 1
+      });
+    }, 10);
+  });
+
+  // 返回按钮点击事件
+  $backBtn.on('click', function() {
+    $pageTitle.text('Print Margin Report');
+    $tablesSection.hide();
+    $welcomeSection.show();
+  });
+
+  // 下载按钮点击事件
+  $('#downloadBtn').on('click', function() {
+    // 下载第一个表格
+    downloadTable('table1', 'No_SMS_Registered_Margin_Customers.xlsx');
+    // 下载第二个表格
+    setTimeout(() => {
+      downloadTable('table2', 'SMS_Undeliverable_Margin_Customers.xlsx');
+    }, 1000);
+  });
+
+  // 表格下载函数
+  function downloadTable(tableId, fileName) {
+    const table = document.getElementById(tableId);
+    const wb = XLSX.utils.table_to_book(table, {sheet: "Sheet1"});
+    XLSX.writeFile(wb, fileName);
+  }
+});
+</script>
+<script src="js/singleTable.js"></script>
+<!-- DataTables JS -->
+<script src="../../plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="../../plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="../../plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+</body>
+</html> 
