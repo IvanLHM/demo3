@@ -1,0 +1,235 @@
+/* 打印样式 */
+@media print {
+  .main-header,
+  .main-sidebar,
+  .main-footer,
+  .control-sidebar,
+  .btn {
+    display: none !important;
+  }
+  
+  .content-wrapper {
+    margin-left: 0 !important;
+    padding-top: 0 !important;
+  }
+  
+  .card {
+    break-inside: avoid;
+    box-shadow: none !important;
+  }
+}
+
+/* 欢迎页面样式 */
+#welcome-section {
+  margin-top: 50px;
+}
+
+#welcome-section .card {
+  border: none;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+#welcome-section .fas.fa-table {
+  font-size: 48px;
+}
+
+/* 表格部分样式 */
+#tables-section {
+  opacity: 0;
+}
+
+.btn-success {
+  margin-left: 10px;
+}
+
+.table th {
+  background-color: #f4f6f9;
+}
+
+/* 表单样式 */
+.form-group label {
+  font-weight: normal;
+  color: #666;
+}
+
+.custom-control {
+  padding-top: 8px;
+}
+
+.card {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  margin-bottom: 1.5rem;
+}
+
+#sendTimeInput {
+  height: 38px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.btn-primary {
+  min-width: 140px;
+}
+
+/* 文件上传样式 */
+.custom-file-label::after {
+  content: "Browse";
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.custom-file-label {
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 38px;
+}
+
+.input-group-append .btn {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.custom-file-input {
+  height: 38px;
+}
+
+.custom-file-input:focus ~ .custom-file-label {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+/* 卡片样式 */
+.card {
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.card-header {
+  border-bottom: 1px solid rgba(0,0,0,0.125);
+}
+
+/* 动画效果 */
+#upload-stats-table,
+#report-table {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Timeline 样式 */
+.btn-secondary {
+  margin-left: 5px;
+}
+
+.modal-body {
+  padding: 20px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.timeline {
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+
+.timeline:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #ddd;
+  left: 31px;
+  margin: 0;
+  border-radius: 2px;
+}
+
+.timeline > div {
+  margin-right: 10px;
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.time-label {
+  margin-bottom: 20px;
+}
+
+.time-label > span {
+  padding: 5px 10px;
+  display: inline-block;
+  border-radius: 4px;
+  color: #fff;
+}
+
+.timeline > div > i {
+  width: 30px;
+  height: 30px;
+  font-size: 15px;
+  line-height: 30px;
+  position: absolute;
+  color: #fff;
+  background: #d2d6de;
+  border-radius: 50%;
+  text-align: center;
+  left: 18px;
+  top: 0;
+}
+
+.timeline-item {
+  box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+  border-radius: 3px;
+  margin-left: 60px;
+  margin-right: 15px;
+  margin-top: 0;
+  background: #fff;
+  color: #444;
+  padding: 10px;
+  position: relative;
+}
+
+.timeline-item > .time {
+  float: right;
+  color: #999;
+  font-size: 12px;
+}
+
+.timeline-item > .timeline-header {
+  margin: 0;
+  color: #555;
+  border-bottom: 1px solid #f4f4f4;
+  padding: 10px;
+  font-size: 16px;
+  line-height: 1.1;
+  font-weight: 600;
+}
+
+.timeline-item > .timeline-body {
+  padding: 10px;
+}
+
+.timeline-item > .timeline-footer {
+  padding: 10px;
+}
+
+/* 背景颜色 */
+.bg-blue {
+  background-color: #0073b7 !important;
+}
+
+.bg-green {
+  background-color: #00a65a !important;
+}
+
+.bg-red {
+  background-color: #dd4b39 !important;
+}
+
+.bg-gray {
+  background-color: #d2d6de !important;
+} 
